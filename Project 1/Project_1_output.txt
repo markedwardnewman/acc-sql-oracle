@@ -1,0 +1,207 @@
+﻿CLASS:      ITSE-2309-002
+ASSIGNMENT: Lab 1
+STUDENT:    Mark Newman
+DATE:       November 22, 2015
+
+
+SQL> /*
+During the initial set-up for this database, I encountered an error using the ORDERS_DATA.sql file that I downloaded from blackboard.
+
+  Error starting at line : 1 in command -
+  INSERT INTO orders
+    VALUES (1001,TO_DATE('12/30/1999','MM/DD/YYYY'),104,'ups','n','B77836',
+            TO_DATE('09/31/1999','MM/DD/YYYY'),20.40,10.00,
+            TO_DATE('01/12/2000','MM/DD/YYYY'))
+  Error report -
+  SQL Error: ORA-01839: date not valid for month specified
+  01839. 00000 -  "date not valid for month specified"
+  *Cause:
+  *Action:
+
+  The issue is that September doesn't have 31 days, so I let it be.  Consequently, that entry has been left it out, which may or may not affect some of this lab's output.
+*/
+SQL> --#1: List all columns and rows in the stock table.
+SQL> SELECT * FROM stock;
+
+ STOCK_NUM MAN DESCRIPTION     UNIT_PRICE UNIT UNIT_DESCR    
+---------- --- --------------- ---------- ---- ---------------
+         1 HRO baseball gloves        250 case 10 gloves/case 
+         1 HSK baseball gloves        800 case 10 gloves/case 
+         1 SMT baseball gloves        450 case 10 gloves/case 
+         2 HRO baseball               126 case 24/case        
+         3 HSK baseball bat           240 case 12/case        
+         4 HSK football               960 case 24/case        
+         4 HRO football               480 case 24/case        
+         5 NRG tennis racquet          28 each each           
+         5 SMT tennis racquet          25 each each           
+         5 ANZ tennis racquet        19.8 each each           
+         6 SMT tennis ball             36 case 24 cans/case   
+         6 ANZ tennis balls            48 case 24 cans/case   
+         7 HRO basketball             600 case 24/case        
+         8 ANZ volleyball             840 case 24/case        
+         9 ANZ volleyball net          20 each each           
+
+ 15 rows selected 
+
+SQL> --#2:  List the last name, first name, and company of all customers (List the columns in that order). Place the list in alphabetical order by company name.
+SQL> SELECT lname, fname, company FROM customer ORDER BY company;
+
+LNAME           FNAME           COMPANY            
+--------------- --------------- --------------------
+Jaeger          Roy             AA athletics        
+Pauli           Ludwig          All Sports Supplies 
+Ream            Charles         Athletic Supplies   
+Baxter          Dick            Blue Ribbon Sports  
+Grant           Alfred          Gold Medal Sports   
+Sipes           Arnold          Kids Korner         
+Vector          Raymond         Los Altos Sports    
+Parmelee        Jean            Olympic City        
+Currie          Phillip         Phil's Sports       
+Higgins         Anthony         Play Ball!          
+Quinn           Donald          Quinn's Sports      
+Lawson          Margaret        Runners and Others  
+Miller          Jane            Sport Stuff         
+Albertson       Frank           Sporting Place      
+Keyes           Frances         Sports Center       
+Sadler          Carole          Sports Spots        
+Beatty          Lana            Sportstown          
+Watson          George          Watson and Son      
+
+ 18 rows selected 
+
+SQL> --#3: List the company names for all customers from Sunnyvale, Redwood City, or San Francisco.
+SQL> SELECT company FROM customer WHERE city='Sunnyvale' OR city='Redwood City' OR city='San Francisco';
+
+COMPANY            
+--------------------
+All Sports Supplies 
+Sports Spots        
+Play Ball!          
+Quinn's Sports      
+Sport Stuff         
+AA athletics        
+Sports Center       
+Sporting Place      
+Kids Korner         
+
+ 9 rows selected 
+
+SQL> --#4: List all orders that were placed between the dates 12/31/1999 and 01/03/2000. List order number, order date, customer number, ship date, and paid date.
+SQL> SELECT order_num, order_date, customer_num, ship_date, paid_date FROM orders WHERE order_date BETWEEN '31-DEC-99' AND '03-JAN-00';
+
+ ORDER_NUM ORDER_DATE CUSTOMER_NUM SHIP_DATE PAID_DATE
+---------- ---------- ------------ --------- ---------
+      1010 31-DEC-99           115 02-JAN-00 22-JAN-00
+      1011 31-DEC-99           104 02-JAN-00 13-JAN-00
+      1012 31-DEC-99           117 05-JAN-00          
+      1013 03-JAN-00           104 08-JAN-00 17-JAN-00
+      1014 31-DEC-99           106 04-JAN-00 16-JAN-00
+      1015 03-JAN-00           110 08-JAN-00 24-JAN-00
+
+ 6 rows selected 
+
+SQL> --#5. List the order number, order date, and shipping charges for all orders that are not on backlog and for which the shipping charge is over $15.00.
+SQL> SELECT order_num, order_date, ship_charge FROM orders WHERE backlog='n' AND ship_charge > '15';
+
+ ORDER_NUM ORDER_DATE SHIP_CHARGE
+---------- ---------- -----------
+      1002 20-DEC-99         15.3
+      1005 30-DEC-99         16.2
+      1007 30-DEC-99         25.2
+
+SQL> --#6. List all stock items which are baseball items which have a unit price greater than $200.00 and a manufacturer code which starts with ‗H‘. (Hint: use LIKE)
+SQL> SELECT * FROM stock WHERE description LIKE '%baseball%' AND unit_price>'200' AND manu_code LIKE 'H%';
+
+ STOCK_NUM MAN DESCRIPTION     UNIT_PRICE UNIT UNIT_DESCR    
+---------- --- --------------- ---------- ---- ---------------
+         1 HRO baseball gloves        250 case 10 gloves/case 
+         1 HSK baseball gloves        800 case 10 gloves/case 
+         3 HSK baseball bat           240 case 12/case        
+
+SQL> --#7. List the company name for all customers who have orders. Don not list a company more than once.
+SQL> SELECT UNIQUE company FROM customer INNER JOIN orders ON orders.CUSTOMER_NUM=customer.CUSTOMER_NUM;
+
+COMPANY            
+--------------------
+AA athletics        
+Olympic City        
+Runners and Others  
+All Sports Supplies 
+Watson and Son      
+Gold Medal Sports   
+Sports Center       
+Kids Korner         
+Play Ball!          
+
+ 9 rows selected 
+
+SQL> --#8. List the customer number and the description (from the stock table) of all items ordered by customers with customer numbers 104 – 108. Order the output by customer number and description. (There should be no duplicate rows in your output).
+SQL> SELECT UNIQUE customer.CUSTOMER_NUM, stock.DESCRIPTION
+FROM customer
+INNER JOIN orders
+  ON orders.CUSTOMER_NUM=customer.CUSTOMER_NUM
+INNER JOIN items
+  ON items.ORDER_NUM=orders.ORDER_NUM
+INNER JOIN stock
+  ON stock.STOCK_NUM=items.STOCK_NUM
+WHERE customer.customer_num BETWEEN '104' AND '108'
+ORDER BY customer.customer_num, stock.description;
+
+CUSTOMER_NUM DESCRIPTION   
+------------ ---------------
+         104 tennis ball    
+         104 tennis balls   
+         104 tennis racquet 
+         104 volleyball     
+         104 volleyball net 
+         106 baseball       
+         106 baseball bat   
+         106 baseball gloves
+         106 football       
+
+ 9 rows selected 
+
+SQL> --#9. List the number of (distinct) customers having an order. Label the column "Total_Customers_with_Orders.
+SQL> --First way
+SQL> SELECT COUNT(DISTINCT customer.CUSTOMER_NUM) AS "Total_Customers_with_Orders"
+FROM customer, orders
+WHERE orders.CUSTOMER_NUM=customer.CUSTOMER_NUM
+ORDER BY customer.CUSTOMER_NUM;
+
+            Total_Customers_with_Orders
+---------------------------------------
+                                      9
+
+SQL> --Second way
+SQL> SELECT COUNT(DISTINCT customer.CUSTOMER_NUM) AS "Total_Customers_with_Orders"
+FROM customer
+INNER JOIN orders
+  ON customer.CUSTOMER_NUM=orders.CUSTOMER_NUM
+ORDER BY customer.CUSTOMER_NUM;
+
+            Total_Customers_with_Orders
+---------------------------------------
+                                      9
+
+SQL> --#10 For each customer having an order, list the customer number, the number of orders that customer has, the total quantity of items on those orders, and the total price for the items. Order the output by customer number.
+SQL> SELECT orders.customer_num, COUNT(DISTINCT orders.order_num) "Num Orders", SUM(items.quantity) as "Total Quantity", SUM(items.total_price) as "Total Amount"
+FROM orders, items
+WHERE orders.order_num = items.order_num
+GROUP BY orders.customer_num
+ORDER BY orders.customer_num;
+
+CUSTOMER_NUM Num Orders                          Total Quantity                            Total Amount
+------------ ---------- --------------------------------------- ---------------------------------------
+         101          1                                       2                                    1200
+         104          3                                      17                                  1201.8
+         106          2                                       6                                    3566
+         110          2                                       7                                    1390
+         111          1                                       1                                     450
+         112          1                                      17                                     498
+         115          1                                       2                                      84
+         116          1                                      22                                     562
+         117          2                                      16                                    2736
+
+ 9 rows selected 
+
+SQL> SET ECHO OFF

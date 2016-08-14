@@ -1,0 +1,349 @@
+SQL> @D:\_EDUCATION\ACC\_2015_Fall\ITSE-2309-002-Database-Prog\Competency3\lab\Newman_lab2.sql
+SQL> -- ITSE 2309
+SQL> -- Lab #2
+SQL> -- Mark Newman
+SQL> -- 12/10/2015
+SQL> -- NOTE: While populating this database for Lab #1, I encountered an error using the ORDERS_DATA.sql file that I downloaded from blackboard.
+SQL> --           The issue was that September doesn't have 31 days (which was detailed in the liner notes of Lab #1), so I let it be.
+SQL> --           Consequently, that entry has been left it out, which may or may not affect some of this lab's output.
+SQL> --------------
+SQL> SET ECHO ON
+SQL> SET LINESIZE 80
+SQL> SET PAGESIZE 80
+SQL> -- #1
+SQL> SELECT customer.company, stock.description, manufact.manu_name, items.quantity, items.total_price
+    FROM customer
+        INNER JOIN orders ON customer.customer_num = orders.customer_num
+        INNER JOIN items ON orders.order_num = items.order_num
+        INNER JOIN stock ON items.stock_num = stock.stock_num
+        INNER JOIN manufact ON stock.manu_code = manufact.manu_code
+    ORDER BY company, description;
+
+COMPANY              DESCRIPTION     MANU_NAME         QUANTITY TOTAL_PRIC
+-------------------- --------------- --------------- ---------- ----------
+AA athletics         baseball gloves Smith                    1        450
+AA athletics         baseball gloves Hero                     1        450
+AA athletics         baseball gloves Husky                    1        450
+AA athletics         volleyball      Anza                     1        840
+AA athletics         volleyball net  Anza                     5        100
+All Sports Supplies  baseball bat    Husky                    1        240
+All Sports Supplies  football        Husky                    1        960
+All Sports Supplies  football        Hero                     1        960
+Gold Medal Sports    tennis ball     Smith                    1         48
+Gold Medal Sports    tennis ball     Smith                    1         36
+Gold Medal Sports    tennis balls    Anza                     1         36
+Gold Medal Sports    tennis balls    Anza                     1         48
+Kids Korner          baseball        Hero                     1        126
+Kids Korner          baseball bat    Husky                    1        240
+Kids Korner          baseball gloves Hero                     1        250
+Kids Korner          baseball gloves Husky                    1        250
+Kids Korner          baseball gloves Smith                    1        250
+Kids Korner          basketball      Hero                     1        600
+Kids Korner          football        Hero                     1        480
+Kids Korner          football        Husky                    1        480
+Kids Korner          volleyball      Anza                     1        840
+Kids Korner          volleyball net  Anza                    10        200
+Olympic City         tennis ball     Smith                    1         48
+Olympic City         tennis ball     Smith                    1         36
+Olympic City         tennis balls    Anza                     1         48
+Olympic City         tennis balls    Anza                     1         36
+Olympic City         tennis racquet  Smith                   10        280
+Olympic City         tennis racquet  Norge                   10        280
+Olympic City         tennis racquet  Smith                   10        198
+Olympic City         tennis racquet  Anza                    10        280
+Olympic City         tennis racquet  Norge                   10        198
+Olympic City         tennis racquet  Anza                    10        198
+Play Ball!           tennis ball     Smith                    1         48
+Play Ball!           tennis ball     Smith                    1         36
+Play Ball!           tennis balls    Anza                     1         48
+Play Ball!           tennis balls    Anza                     1         36
+Play Ball!           tennis racquet  Smith                    1       19.8
+Play Ball!           tennis racquet  Smith                    5         99
+Play Ball!           tennis racquet  Smith                    5         99
+Play Ball!           tennis racquet  Norge                    1       19.8
+Play Ball!           tennis racquet  Norge                    5         99
+Play Ball!           tennis racquet  Norge                    5         99
+Play Ball!           tennis racquet  Anza                     5         99
+Play Ball!           tennis racquet  Anza                     1       19.8
+Play Ball!           tennis racquet  Anza                     5         99
+Play Ball!           volleyball      Anza                     1        840
+Play Ball!           volleyball net  Anza                     1         20
+Play Ball!           volleyball net  Anza                     2         40
+Runners and Others   tennis ball     Smith                    1         48
+Runners and Others   tennis ball     Smith                    1         36
+Runners and Others   tennis balls    Anza                     1         36
+Runners and Others   tennis balls    Anza                     1         48
+Runners and Others   tennis racquet  Smith                    5        190
+Runners and Others   tennis racquet  Smith                    5         99
+Runners and Others   tennis racquet  Anza                     5         99
+Runners and Others   tennis racquet  Anza                     5        190
+Runners and Others   tennis racquet  Anza                     5        125
+Runners and Others   tennis racquet  Smith                    5        125
+Runners and Others   tennis racquet  Norge                    5        125
+Runners and Others   tennis racquet  Norge                    5        190
+Runners and Others   tennis racquet  Norge                    5         99
+Sports Center        baseball gloves Smith                    1        450
+Sports Center        baseball gloves Husky                    1        450
+Sports Center        baseball gloves Hero                     1        450
+Watson and Son       baseball        Hero                     1        126
+Watson and Son       baseball bat    Husky                    1        240
+Watson and Son       baseball gloves Hero                     1        800
+Watson and Son       baseball gloves Smith                    1        800
+Watson and Son       baseball gloves Smith                    1        960
+Watson and Son       baseball gloves Hero                     1        960
+Watson and Son       baseball gloves Husky                    1        800
+Watson and Son       baseball gloves Husky                    1        960
+Watson and Son       football        Husky                    1        480
+Watson and Son       football        Husky                    1        960
+Watson and Son       football        Hero                     1        960
+Watson and Son       football        Hero                     1        480
+
+ 76 rows selected 
+
+SQL> --- #2
+SQL> SELECT UNIQUE orders.order_num, orders.order_date, customer.company, orders.ship_date
+    FROM customer
+        INNER JOIN orders ON customer.customer_num = orders.customer_num
+        INNER JOIN items ON orders.order_num = items.order_num
+    WHERE orders.ship_date BETWEEN '25-DEC-99' AND '05-JAN-00'
+    ORDER BY company, order_num;
+
+ ORDER_NUM ORDER_DATE COMPANY              SHIP_DATE
+---------- ---------- -------------------- ---------
+      1010 31-DEC-99  Gold Medal Sports    02-JAN-00
+      1007 30-DEC-99  Kids Korner          03-JAN-00
+      1012 31-DEC-99  Kids Korner          05-JAN-00
+      1011 31-DEC-99  Play Ball!           02-JAN-00
+      1014 31-DEC-99  Watson and Son       04-JAN-00
+
+SQL> -- #3
+SQL> SELECT COUNT(DISTINCT customer.lname) as "Non Ordering People"--, orders.order_num
+    FROM customer
+        LEFT JOIN orders ON customer.customer_num = orders.customer_num
+    WHERE orders.order_num IS NULL   
+    ORDER BY customer.lname;
+
+                    Non Ordering People
+---------------------------------------
+                                      9
+
+SQL> -- #4
+SQL> SELECT UNIQUE customer.customer_num, stock.stock_num, stock.description
+    FROM customer
+        INNER JOIN orders ON customer.customer_num = orders.customer_num
+        INNER JOIN items ON orders.order_num = items.order_num
+        INNER JOIN stock ON items.stock_num = stock.stock_num
+    WHERE stock.description LIKE '%tennis%' OR stock.description LIKE '%volleyball%'
+    ORDER BY customer_num;
+
+CUSTOMER_NUM  STOCK_NUM DESCRIPTION   
+------------ ---------- ---------------
+         104          5 tennis racquet 
+         104          6 tennis ball    
+         104          6 tennis balls   
+         104          8 volleyball     
+         104          9 volleyball net 
+         110          8 volleyball     
+         110          9 volleyball net 
+         112          5 tennis racquet 
+         112          6 tennis ball    
+         112          6 tennis balls   
+         115          6 tennis ball    
+         115          6 tennis balls   
+         116          5 tennis racquet 
+         116          6 tennis ball    
+         116          6 tennis balls   
+         117          8 volleyball     
+         117          9 volleyball net 
+
+ 17 rows selected 
+
+SQL> -- #5 NOTE: The lab text has an error producing comma in it.  Like so -> Prof_Dept CHAR(6),
+SQL> /*
+CREATE TABLE Professor
+    (Prof_ID NUMBER(3) Constraint pk_Professor Primary Key,
+    Prof_Lname VARCHAR2(15) NOT NULL,
+    Prof_Hiredate DATE,
+    Prof_Sal NUMBER(8,2),
+    Prof_Dept CHAR(6),
+    );
+    
+SQL>  Error starting at line : 1 in command -
+      CREATE TABLE Professor
+        (Prof_ID NUMBER(3) Constraint pk_Professor Primary Key,
+        Prof_Lname VARCHAR2(15) NOT NULL,
+        Prof_Hiredate DATE,
+        Prof_Sal NUMBER(8,2),
+        Prof_Dept CHAR(6),
+        )
+      Error report -
+      SQL Error: ORA-00904: : invalid identifier
+      00904. 00000 -  "%s: invalid identifier"
+      *Cause:    
+      *Action:
+*/
+SQL> -- I deleted the comma after Prof_Dept CHAR(6), then tried again
+SQL> CREATE TABLE Professor
+    (Prof_ID NUMBER(3) Constraint pk_Professor Primary Key,
+    Prof_Lname VARCHAR2(15) NOT NULL,
+    Prof_Hiredate DATE,
+    Prof_Sal NUMBER(8,2),
+    Prof_Dept CHAR(6)
+    );
+
+Table PROFESSOR created.
+
+SQL> DESC Professor
+
+Name          Null     Type         
+------------- -------- ------------ 
+PROF_ID       NOT NULL NUMBER(3)    
+PROF_LNAME    NOT NULL VARCHAR2(15) 
+PROF_HIREDATE          DATE         
+PROF_SAL               NUMBER(8,2)  
+PROF_DEPT              CHAR(6)      
+SQL> CREATE TABLE Student
+    (Stu_ID NUMBER(4) Constraint pk_Student Primary Key,
+    Stu_Lname VARCHAR2(15) NOT NULL,
+    Stu_Major CHAR(6),
+    Stu_CredHrs NUMBER(4),
+    Stu_GradePts NUMBER(5),
+    Prof_ID NUMBER(3),
+    CONSTRAINT fk_Student_Prof_ID FOREIGN KEY(Prof_ID)
+    REFERENCES Professor
+    );
+
+Table STUDENT created.
+
+SQL> DESC Student
+
+Name         Null     Type         
+------------ -------- ------------ 
+STU_ID       NOT NULL NUMBER(4)    
+STU_LNAME    NOT NULL VARCHAR2(15) 
+STU_MAJOR             CHAR(6)      
+STU_CREDHRS           NUMBER(4)    
+STU_GRADEPTS          NUMBER(5)    
+PROF_ID               NUMBER(3)    
+SQL> -- #6 
+SQL> INSERT INTO Professor
+  VALUES (123, 'Hilbert', TO_DATE('20-MAY-1992', 'DD-MON-YYYY'), 58000, 'MATH');
+
+1 row inserted.
+
+SQL> INSERT INTO Professor
+  VALUES (243, 'Newell', TO_DATE('15-JUL-1997', 'DD-MON-YYYY'), 65500, 'CMPSCI');
+
+1 row inserted.
+
+SQL> INSERT INTO Professor
+  VALUES (389, 'Lessing', TO_DATE('04-APR-1988', 'DD-MON-YYYY'), 40250, 'ENG');
+
+1 row inserted.
+
+SQL> SELECT * FROM Professor;
+
+   PROF_ID PROF_LNAME      PROF_HIREDATE   PROF_SAL PROF_D
+---------- --------------- ------------- ---------- ------
+       123 Hilbert         20-MAY-92          58000 MATH  
+       243 Newell          15-JUL-97          65500 CMPSCI
+       389 Lessing         04-APR-88          40250 ENG   
+
+SQL> INSERT INTO Student
+  VALUES (2001, 'Parker', 'CMPSCI', 52, 160, 243);
+
+1 row inserted.
+
+SQL> INSERT INTO Student
+  VALUES (2166, 'Smith', 'ENG', 30, 75, 389);
+
+1 row inserted.
+
+SQL> INSERT INTO Student
+  VALUES (3200, 'Garcia', 'MATH', 62, 248, 123);
+
+1 row inserted.
+
+SQL> INSERT INTO Student
+  VALUES (4520, 'Smith', 'CMPSCI', 45, 157, NULL);
+
+1 row inserted.
+
+SQL> SELECT * FROM Student;
+
+    STU_ID STU_LNAME       STU_MA STU_CREDHRS STU_GRADEPTS    PROF_ID
+---------- --------------- ------ ----------- ------------ ----------
+      2001 Parker          CMPSCI          52          160        243
+      2166 Smith           ENG             30           75        389
+      3200 Garcia          MATH            62          248        123
+      4520 Smith           CMPSCI          45          157           
+
+SQL> -- #7a
+SQL> DELETE FROM professor WHERE prof_id = 389;
+
+Error starting at line : 130 File @ D:\_EDUCATION\ACC\_2015_Fall\ITSE-2309-002-Database-Prog\Competency3\lab\Newman_lab2.sql
+In command -
+DELETE FROM professor WHERE prof_id = 389
+Error report -
+SQL Error: ORA-02292: integrity constraint (ITSE2309.FK_STUDENT_PROF_ID) violated - child record found
+02292. 00000 - "integrity constraint (%s.%s) violated - child record found"
+*Cause:    attempted to delete a parent key value that had a foreign
+           dependency.
+*Action:   delete dependencies first then parent or disable constraint.
+SQL> -- #7b
+SQL> DELETE FROM student WHERE stu_id = 2166;
+
+1 row deleted.
+
+SQL> SELECT * FROM Student;
+
+    STU_ID STU_LNAME       STU_MA STU_CREDHRS STU_GRADEPTS    PROF_ID
+---------- --------------- ------ ----------- ------------ ----------
+      2001 Parker          CMPSCI          52          160        243
+      3200 Garcia          MATH            62          248        123
+      4520 Smith           CMPSCI          45          157           
+
+SQL> -- #7c
+SQL> DELETE FROM professor WHERE prof_id = 389;
+
+1 row deleted.
+
+SQL> SELECT * FROM Professor;
+
+   PROF_ID PROF_LNAME      PROF_HIREDATE   PROF_SAL PROF_D
+---------- --------------- ------------- ---------- ------
+       123 Hilbert         20-MAY-92          58000 MATH  
+       243 Newell          15-JUL-97          65500 CMPSCI
+
+SQL> -- ANSWER: Disabling the ability to delete primary key entities that reference active foreign key entities prevents the creation of orphaned records.  Ie, it is not allowed so that referential integrity can be maintained.
+SQL> --    Professor Lessing couldn't be deleted because Student Smith relied on Professor Lessing.  Otherwise, Student Smith would become like a ghost on campus, forever wandering aimlessly.  And we just don't want that.
+SQL> --    After Student Smith dropped Professor Lessing's class, he could finally retire to Mexico, which he promptly did. Now, one day, after drinking one too many coconut martinis, Professor Lessing passed out under that hot Mexican sun.  And that, kids, is how Professor Lessing got one of the best tans of his life!
+SQL> -- #8a Uh-oh! It looks like Different Student Smith decided to take Professor Newell's Computer Science class.  Things turn out well, and she and Student Parker became fast friends, eventually starting their own business that caters to the upper echelons of French high society.
+SQL> UPDATE student
+  SET prof_id = 243
+  WHERE stu_id = 4520;
+
+1 row updated.
+
+SQL> SELECT * FROM Student;
+
+    STU_ID STU_LNAME       STU_MA STU_CREDHRS STU_GRADEPTS    PROF_ID
+---------- --------------- ------ ----------- ------------ ----------
+      2001 Parker          CMPSCI          52          160        243
+      3200 Garcia          MATH            62          248        123
+      4520 Smith           CMPSCI          45          157        243
+
+SQL> -- #8b Give all professors a 10% raise.  Whoohoo!
+SQL> UPDATE professor
+  SET prof_sal = prof_sal * 1.1;
+
+2 rows updated.
+
+SQL> SELECT * FROM Professor;
+
+   PROF_ID PROF_LNAME      PROF_HIREDATE   PROF_SAL PROF_D
+---------- --------------- ------------- ---------- ------
+       123 Hilbert         20-MAY-92          63800 MATH  
+       243 Newell          15-JUL-97          72050 CMPSCI
+
+SQL> SET ECHO OFF
