@@ -1,11 +1,9 @@
-#Oracle's SQL
+# Oracle's SQL
 
-###Follow [these instruction](http://stackoverflow.com/questions/15844905/how-to-stop-google-indexing-my-github-repository) to prevent Google from indexing the content of these particular directories (so that future students can't cheat)!
-
-##Level of expertise
+## Level of expertise
 Halfway Between Beginner and Intermediate.   I also recently completed a 3 hour college course that specifically focused on Oracle's SQL. Also, during my tenure at **Flextronics** I regularly accessed production code on a daily basis.  Near the end I even wrote a couple of stored procedures that printed labels for parts used in **Apple's Mac Pro**.
 
-##Disclaimer
+## Disclaimer
 Oracle's Database 11g Express Edition and SQL Developer is what was used for this class.  Also, for any of the code found here to work correctly, the example database must first be created using the files found in the `database set-up` directory.
 
 I did learn quite a bit in this class, and no longer have that "I hope I don't mess this thing up!" feeling that I previously had when working with databases.  Database Manipulation dropped a few rungs below Security on the Computer Skills That I'm *Not* Good With Ladder.  Also, I learned that the name "Oracle" comes from a CIA project that [Larry Ellison](https://en.wikipedia.org/wiki/Larry_Ellison) was hired to work on back in the 70s.  Plus, did you know that databases are extremely useful when messing with data?  It's true!
@@ -16,8 +14,8 @@ Each directory contains these files:
 - **Project_#.sql** - SQL code written by yours truly
 - **Project_#_output.txt/pdf**-Results after executing the Project_#.sql file
 
-##Projects
-###Project 1
+## Projects
+### Project 1
 ***The challenges:*** 
 
 1. List all columns and rows in the stock table.
@@ -46,7 +44,7 @@ Each directory contains these files:
 - Be able to access ORACLE/SQL Plus
 - simple SQL operations
 
-###Project 2
+### Project 2
 ***The challenges:*** Continuing using items created in Lab 1
 
 1 For each customer, list each stock item ordered, the manufacturer, the quantity ordered, and the total price paid. Include the following columns in the order given below:
@@ -87,7 +85,7 @@ Each directory contains these files:
 - View all tables, View user tables, View table structure, Nested / subquery
 
 
-###Project 3
+### Project 3
 ***The challenge:***
 
 1 Using the table description and business rules listed below, answer or perform the following:
